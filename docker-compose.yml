@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+    mysql:
+        container_name: mysql
+        image: mysql:8.0
+        volumes:
+            - db_data:/var/lib/mysql
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=my_database
+        ports:
+            - "3306:3306"
+        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+
+    phpmyadmin:
+        depends_on:
+            - mysql
+        image: phpmyadmin/phpmyadmin
+        environment:
+            - PMA_HOST=mysql
+            - PMA_USER=root
+            - PMA_PASSWORD=root
+        restart: always
+        ports:
+            - "8080:80"
+        volumes:
+            - ./build/phpmyadmin-misc.ini:/usr/local/etc/php/conf.d/phpmyadmin-misc.ini
+
+    php-apache:
+        build: ./build
+        volumes:
+            - ./htdocs:/var/www/html
+            - ./build/httpd.conf:/etc/apache2/sites-enabled/001-myvh.conf
+            - ./build/php.ini:/usr/local/etc/php/php.ini
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - mysql
+
+volumes:
+    db_data: {}

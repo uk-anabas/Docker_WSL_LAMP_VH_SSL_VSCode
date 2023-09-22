@@ -1,0 +1,5 @@
+htdocs/app/*
+!htdocs/app/.gitkeep
+!htdocs/hogehoge/.gitkeep
+!htdocs/fugafuga/.gitkeep
+
